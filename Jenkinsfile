@@ -24,8 +24,7 @@ node {
     def dockerImage
     stage('build docker') {
         sh "cp -R src/main/docker target/"
-        sh "pwd"
-        sh "cp target/*.war docker"
+        sh "cp target/*.war target/docker/"
         dockerImage = docker.build('docker-login/uaa', 'target/docker')
     }
 
