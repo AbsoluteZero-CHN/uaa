@@ -29,7 +29,7 @@ node {
     }
 
     stage('publish docker') {
-        docker.withRegistry('10.0.0.201:5000', 'docker-login') {
+        docker.withRegistry('10.0.0.201:5000', 'root') {
             dockerImage.push 'latest'
         }
     }
