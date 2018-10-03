@@ -33,7 +33,7 @@ spring:
             port: 8500
     datasource:
         type: com.zaxxer.hikari.HikariDataSource
-        url: jdbc:mysql://localhost:3306/base?useUnicode=true&characterEncoding=utf8&useSSL=false
+        url: jdbc:mysql://10.0.0.200:3306/base?useUnicode=true&characterEncoding=utf8&useSSL=false
         username: root
         password: caohao
         hikari:
