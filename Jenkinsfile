@@ -11,26 +11,25 @@ node {
         }
 
         stage('clean') {
-            sh "cd noload-uaa && chmod +x mvnw"
-            sh "cd noload-uaa && ./mvnw clean"
+            sh "chmod +x mvnw"
+            sh "./mvnw clean"
         }
 
         stage('packaging') {
-            sh "cd noload-uaa && ./mvnw verify -Pprod -DskipTests"
+            sh "./mvnw verify -Pprod -DskipTests"
             archiveArtifacts artifacts: '**/target/*.war', fingerprint: true
         }
     }
 
     def dockerImage
     stage('build docker') {
-        sh "cd noload-uaa && cp -R src/main/docker target/"
-        sh "pwd"
-        sh "cd noload-uaa && cp target/*.war docker"
-        dockerImage = docker.build('docker-login/uaa', 'noload-uaa/target/docker')
+        sh "cp -R src/main/docker target/"
+        sh "cp target/*.war target/docker/"
+        dockerImage = docker.build('uaa', 'target/docker')
     }
 
     stage('publish docker') {
-        docker.withRegistry('10.0.0.201:5000', 'docker-login') {
+        docker.withRegistry('http://10.0.0.201:5000') {
             dockerImage.push 'latest'
         }
     }
