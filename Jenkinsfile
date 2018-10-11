@@ -1,0 +1,37 @@
+#!/usr/bin/env groovy
+
+node {
+    stage('checkout') {
+        checkout scm
+    }
+
+    docker.image('jhipster/jhipster:v5.3.4').inside('-u root -e MAVEN_OPTS="-Duser.home=./"') {
+        stage('check java') {
+            sh "java -version"
+        }
+
+        stage('clean') {
+            sh "cd noload-uaa && chmod +x mvnw"
+            sh "cd noload-uaa && ./mvnw clean"
+        }
+
+        stage('packaging') {
+            sh "cd noload-uaa && ./mvnw verify -Pprod -DskipTests"
+            archiveArtifacts artifacts: '**/target/*.war', fingerprint: true
+        }
+    }
+
+    def dockerImage
+    stage('build docker') {
+        sh "cd noload-uaa && cp -R src/main/docker target/"
+        sh "pwd"
+        sh "cd noload-uaa && cp target/*.war docker"
+        dockerImage = docker.build('docker-login/uaa', 'noload-uaa/target/docker')
+    }
+
+    stage('publish docker') {
+        docker.withRegistry('10.0.0.201:5000', 'docker-login') {
+            dockerImage.push 'latest'
+        }
+    }
+}

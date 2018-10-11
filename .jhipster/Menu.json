@@ -1,0 +1,30 @@
+{
+    "fluentMethods": true,
+    "clientRootFolder": "",
+    "relationships": [],
+    "fields": [
+        {
+            "fieldName": "name",
+            "fieldType": "String"
+        },
+        {
+            "fieldName": "url",
+            "fieldType": "String"
+        },
+        {
+            "fieldName": "activated",
+            "fieldType": "Boolean"
+        },
+        {
+            "fieldName": "icon",
+            "fieldType": "String"
+        }
+    ],
+    "changelogDate": "20180923094747",
+    "dto": "mapstruct",
+    "searchEngine": false,
+    "service": "serviceClass",
+    "entityTableName": "menu",
+    "jpaMetamodelFiltering": false,
+    "pagination": "pagination"
+}

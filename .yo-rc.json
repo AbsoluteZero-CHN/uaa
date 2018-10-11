@@ -1,0 +1,36 @@
+{
+  "generator-jhipster": {
+    "promptValues": {
+      "packageName": "cn.noload.uaa",
+      "nativeLanguage": "en"
+    },
+    "jhipsterVersion": "5.2.1",
+    "applicationType": "uaa",
+    "baseName": "uaa",
+    "packageName": "cn.noload.uaa",
+    "packageFolder": "cn/noload/uaa",
+    "serverPort": "9999",
+    "authenticationType": "uaa",
+    "cacheProvider": "hazelcast",
+    "enableHibernateCache": true,
+    "websocket": false,
+    "databaseType": "sql",
+    "devDatabaseType": "mysql",
+    "prodDatabaseType": "mysql",
+    "searchEngine": false,
+    "messageBroker": false,
+    "serviceDiscoveryType": "consul",
+    "buildTool": "maven",
+    "enableSwaggerCodegen": true,
+    "enableTranslation": true,
+    "testFrameworks": [],
+    "jhiPrefix": "jhi",
+    "clientPackageManager": "npm",
+    "nativeLanguage": "en",
+    "languages": [
+      "en",
+      "zh-cn"
+    ],
+    "skipClient": true
+  }
+}

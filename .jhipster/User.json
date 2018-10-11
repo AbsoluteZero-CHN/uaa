@@ -1,0 +1,29 @@
+{
+    "fluentMethods": true,
+    "clientRootFolder": "",
+    "relationships": [
+        {
+            "relationshipName": "modules",
+            "otherEntityName": "module",
+            "relationshipType": "many-to-many",
+            "ownerSide": false,
+            "otherEntityRelationshipName": "user"
+        },
+        {
+            "relationshipName": "user",
+            "otherEntityName": "user",
+            "relationshipType": "many-to-many",
+            "otherEntityField": "login",
+            "ownerSide": true,
+            "otherEntityRelationshipName": "user"
+        }
+    ],
+    "fields": [],
+    "changelogDate": "20180921133345",
+    "dto": "mapstruct",
+    "searchEngine": false,
+    "service": "serviceClass",
+    "entityTableName": "user",
+    "jpaMetamodelFiltering": false,
+    "pagination": "pagination"
+}
