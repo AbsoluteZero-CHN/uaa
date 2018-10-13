@@ -18,5 +18,5 @@ spring:
                 profile-separator: "-"
             discovery:
                 tags: profile=${spring.profiles.active}, version=${info.project.version:}
-            host: 10.0.0.200
+            host: ${CONSUL_SERVER_HOST}
             port: 8500
