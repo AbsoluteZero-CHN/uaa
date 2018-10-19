@@ -29,7 +29,6 @@ services:
             - INIT_SLEEP_SECONDS=5
             - CONSUL_URL=consul
             - CONSUL_PORT=8500
-            - CONSUL_SERVER_HOST=${CONSUL_SERVER_HOST}
         # Uncomment to load configuration into Consul from a Git repository
         # as configured in central-server-config/git2consul.json
         # Also set SPRING_CLOUD_CONSUL_CONFIG_FORMAT=files on your apps
