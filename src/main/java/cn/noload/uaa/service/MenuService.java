@@ -49,7 +49,7 @@ public class MenuService {
      * @param menuDTO the entity to save
      * @return the persisted entity
      */
-    @DistributedTransaction(values = "menu")
+    @DistributedTransaction(value = DistributedTransaction.Busness.TEST)
     public MenuDTO save(MenuDTO menuDTO) {
         log.debug("Request to save Menu : {}", menuDTO);
         System.out.println(threadLocal.get());

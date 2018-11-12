@@ -11,5 +11,9 @@ public @interface DistributedTransaction {
     /**
      * 定义分布式事务的种类
      * */
-    String values() default "default";
+    DistributedTransaction.Busness value();
+
+    public enum Busness {
+        TEST
+    }
 }
