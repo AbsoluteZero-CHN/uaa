@@ -23,7 +23,12 @@ public class AmountTestResource {
         @PathVariable("id") String id,
         @RequestBody AmountTest amount
     ) {
-        AmountTest amountTest = amountTestService.save(id, amount.getAmount());
+        AmountTest amountTest = null;
+        try {
+            amountTest = amountTestService.save(id, amount.getAmount());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         return ResponseEntity.ok(amountTest);
     }
 }

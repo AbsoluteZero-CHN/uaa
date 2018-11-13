@@ -11,23 +11,26 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@Transactional
+@Transactional(rollbackFor = Exception.class)
 public class AmountTestService {
 
     private final Logger log = LoggerFactory.getLogger(AmountTestService.class);
 
-    private final AmountTestRepository amountTestRespository;
+    private final AmountTestRepository amountTestRepository;
     private final MenuRepository menuRepository;
 
-    public AmountTestService(AmountTestRepository amountTestRespository, MenuRepository menuRepository) {
-        this.amountTestRespository = amountTestRespository;
+    public AmountTestService(AmountTestRepository amountTestRepository, MenuRepository menuRepository) {
+        this.amountTestRepository = amountTestRepository;
         this.menuRepository = menuRepository;
     }
 
     @DistributedTransaction(value = DistributedTransaction.Busness.TEST)
-    public AmountTest save(String id, Double amount) {
-        AmountTest amountTest = amountTestRespository.getOne(id);
+    public AmountTest save(String id, Double amount) throws Exception {
+        AmountTest amountTest = amountTestRepository.getOne(id);
         amountTest.setAmount(amountTest.getAmount() + amount);
-        return amountTestRespository.save(amountTest);
+        if(true) {
+            throw new Exception("事务回滚测试");
+        }
+        return amountTestRepository.save(amountTest);
     }
 }

@@ -164,4 +164,8 @@ uaa:
 # https://www.jhipster.tech/common-application-properties/
 # ===================================================================
 
-# application:
+application:
+    rocket:
+        hosts:
+            - 10.0.0.202:9876
+            - 10.0.0.203:9876

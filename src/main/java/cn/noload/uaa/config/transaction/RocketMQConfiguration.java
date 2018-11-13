@@ -1,7 +1,10 @@
 package cn.noload.uaa.config.transaction;
 
 
+import cn.noload.uaa.config.ApplicationProperties;
+import cn.noload.uaa.config.rocketmq.RocketMQProperties;
 import cn.noload.uaa.domain.MessageConfirmation;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.rocketmq.client.exception.MQClientException;
 import org.apache.rocketmq.client.producer.DefaultMQProducer;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -12,11 +15,17 @@ import org.springframework.context.annotation.Configuration;
 public class RocketMQConfiguration {
 
 
-    @Bean()
+    private final ApplicationProperties applicationProperties;
+
+    public RocketMQConfiguration(ApplicationProperties applicationProperties) {
+        this.applicationProperties = applicationProperties;
+    }
+
+    @Bean
     @Qualifier("transaction")
     public DefaultMQProducer defaultMQProducer() throws MQClientException {
-        DefaultMQProducer producer = new DefaultMQProducer("niwei_producer_group");
-        producer.setNamesrvAddr("10.0.0.202:9876");
+        DefaultMQProducer producer = new DefaultMQProducer("transaction");
+        producer.setNamesrvAddr(StringUtils.join(applicationProperties.getRocket().getHosts(), ";"));
         producer.start();
         return producer;
     }
@@ -24,6 +33,6 @@ public class RocketMQConfiguration {
     @Bean
     @Qualifier("transactionKey")
     public ThreadLocal<MessageConfirmation> threadLocal() {
-        return new ThreadLocal<MessageConfirmation>();
+        return new ThreadLocal();
     }
 }
