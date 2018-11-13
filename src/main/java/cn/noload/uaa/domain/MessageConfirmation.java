@@ -20,7 +20,7 @@ public class MessageConfirmation {
     @Column(name="id", unique=true, nullable=false, updatable=false, length = 36)
     private String id;
 
-    @Column(name = "name")
+    @Column(name = "status")
     private Integer status;
 
     @Column(name = "update_time")

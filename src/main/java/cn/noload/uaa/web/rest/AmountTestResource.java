@@ -21,9 +21,9 @@ public class AmountTestResource {
     @PutMapping("/amount-test/{id}")
     public ResponseEntity<AmountTest> createAmount(
         @PathVariable("id") String id,
-        Double amount
+        @RequestBody AmountTest amount
     ) {
-        AmountTest amountTest = amountTestService.save(id, amount);
+        AmountTest amountTest = amountTestService.save(id, amount.getAmount());
         return ResponseEntity.ok(amountTest);
     }
 }

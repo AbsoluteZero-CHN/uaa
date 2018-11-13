@@ -1,6 +1,7 @@
 package cn.noload.uaa.config.transaction;
 
 
+import cn.noload.uaa.domain.MessageConfirmation;
 import org.apache.rocketmq.client.exception.MQClientException;
 import org.apache.rocketmq.client.producer.DefaultMQProducer;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -22,7 +23,7 @@ public class RocketMQConfiguration {
 
     @Bean
     @Qualifier("transactionKey")
-    public ThreadLocal threadLocal() {
-        return new ThreadLocal();
+    public ThreadLocal<MessageConfirmation> threadLocal() {
+        return new ThreadLocal<MessageConfirmation>();
     }
 }

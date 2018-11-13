@@ -3,15 +3,16 @@ package cn.noload.uaa.domain;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
+import java.io.Serializable;
 
 @Entity
 @Table(name = "t_amount_test")
-public class AmountTest extends Transaction {
+public class AmountTest implements Serializable {
 
     @Id
     @GeneratedValue(generator="uuid2")
     @GenericGenerator(name="uuid2",strategy="uuid2")
-    @Column(name="event_id", unique=true, nullable=false, updatable=false, length = 36)
+    @Column(name="id", unique=true, nullable=false, updatable=false, length = 36)
     private String id;
 
     @Column(name = "amount")
