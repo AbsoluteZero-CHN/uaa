@@ -72,7 +72,7 @@ public class DistributedTransactionAspect {
                     distributedTransaction.value().toString(), // 消息标签
                     JSON.toJSONString(messageConfirmation).getBytes(RemotingHelper.DEFAULT_CHARSET)  // 消息内容
                 );
-                SendResult sendResult = defaultMQProducer.send(message);
+                SendResult sendResult = defaultMQProducer.sendMessageInTransaction(message, null);
                 if(sendResult.getSendStatus() != SendStatus.SEND_OK) {
                     logger.error("事务消息发送失败: {}", sendResult.getMessageQueue());
                 } else {
@@ -82,13 +82,7 @@ public class DistributedTransactionAspect {
                 }
             } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            } catch (RemotingException e) {
-                e.printStackTrace();
             } catch (MQClientException e) {
-                e.printStackTrace();
-            } catch (MQBrokerException e) {
                 e.printStackTrace();
             }
         });
