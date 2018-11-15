@@ -2,26 +2,30 @@ package cn.noload.uaa.config.transaction;
 
 
 import cn.noload.uaa.config.ApplicationProperties;
-import cn.noload.uaa.config.rocketmq.RocketMQProperties;
 import cn.noload.uaa.domain.MessageConfirmation;
+import cn.noload.uaa.repository.MessageConfirmationRepository;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.rocketmq.client.exception.MQClientException;
-import org.apache.rocketmq.client.producer.DefaultMQProducer;
 import org.apache.rocketmq.client.producer.TransactionMQProducer;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 
 @Configuration
 public class RocketMQConfiguration {
 
-
     private final ApplicationProperties applicationProperties;
+    private final MessageConfirmationRepository messageConfirmationRepository;
 
-    public RocketMQConfiguration(ApplicationProperties applicationProperties) {
+    public RocketMQConfiguration(
+        ApplicationProperties applicationProperties,
+        MessageConfirmationRepository messageConfirmationRepository) {
         this.applicationProperties = applicationProperties;
+        this.messageConfirmationRepository = messageConfirmationRepository;
     }
 
     @Bean
@@ -41,22 +45,14 @@ public class RocketMQConfiguration {
     }
 
     @Bean
-    @Qualifier("sendResult")
-    public ThreadLocal<MessageConfirmation> sendResult() {
-        return new ThreadLocal();
-    }
-
-    @Bean
-    @Qualifier("transactionWait")
-    public ThreadLocal<CountDownLatch> transactionWait() {
-        return new ThreadLocal();
-    }
-
-
-
-    @Bean
     @Qualifier("distributedTransactionListener")
     public DistributedTransactionListener distributedTransactionListener() {
-        return new DistributedTransactionListener(transactionWait());
+        return new DistributedTransactionListener(submittedTransactionIdSet(), messageConfirmationRepository);
+    }
+
+    @Bean
+    @Qualifier("submittedTransactionIdSet")
+    public Set<String> submittedTransactionIdSet() {
+        return new HashSet();
     }
 }

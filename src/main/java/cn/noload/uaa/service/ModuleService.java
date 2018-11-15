@@ -4,6 +4,11 @@ import cn.noload.uaa.domain.Module;
 import cn.noload.uaa.repository.ModuleRepository;
 import cn.noload.uaa.service.dto.ModuleDTO;
 import cn.noload.uaa.service.mapper.ModuleMapper;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.rocketmq.client.exception.MQClientException;
+import org.apache.rocketmq.client.producer.*;
+import org.apache.rocketmq.common.message.Message;
+import org.apache.rocketmq.common.message.MessageExt;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -80,5 +85,30 @@ public class ModuleService {
     public void delete(Long id) {
         log.debug("Request to delete Module : {}", id);
         moduleRepository.deleteById(id);
+    }
+
+
+    public static void main(String[] args) throws MQClientException {
+        TransactionMQProducer producer = new TransactionMQProducer("transaction");
+        producer.setNamesrvAddr("10.0.0.203:9876");
+        producer.setTransactionListener(new Listener());
+        producer.start();
+        TransactionSendResult result = producer.sendMessageInTransaction(new Message("transaction", "消息测试".getBytes()), null);
+        result.getSendStatus();
+        result.getMsgId();
+    }
+
+    static class Listener implements TransactionListener {
+
+        @Override
+        public LocalTransactionState executeLocalTransaction(Message message, Object o) {
+            System.out.println(message.getTransactionId());
+            return LocalTransactionState.COMMIT_MESSAGE;
+        }
+
+        @Override
+        public LocalTransactionState checkLocalTransaction(MessageExt messageExt) {
+            return null;
+        }
     }
 }

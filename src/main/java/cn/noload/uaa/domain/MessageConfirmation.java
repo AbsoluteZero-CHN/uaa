@@ -20,6 +20,9 @@ public class MessageConfirmation {
     @Column(name="id", unique=true, nullable=false, updatable=false, length = 36)
     private String id;
 
+    @Column(name = "msg_id")
+    private String msgId;
+
     @Column(name = "status")
     private Integer status;
 
@@ -33,6 +36,14 @@ public class MessageConfirmation {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public String getMsgId() {
+        return msgId;
+    }
+
+    public void setMsgId(String msgId) {
+        this.msgId = msgId;
     }
 
     public Integer getStatus() {
@@ -49,5 +60,15 @@ public class MessageConfirmation {
 
     public void setUpdateTime(Instant updateTime) {
         this.updateTime = updateTime;
+    }
+
+    @Override
+    public String toString() {
+        return "MessageConfirmation{" +
+            "id='" + id + '\'' +
+            ", msgId='" + msgId + '\'' +
+            ", status=" + status +
+            ", updateTime=" + updateTime +
+            '}';
     }
 }
