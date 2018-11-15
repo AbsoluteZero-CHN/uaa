@@ -7,6 +7,7 @@ import com.alibaba.fastjson.JSON;
 import org.apache.rocketmq.client.producer.SendResult;
 import org.apache.rocketmq.client.producer.SendStatus;
 import org.apache.rocketmq.client.producer.TransactionMQProducer;
+import org.apache.rocketmq.client.producer.TransactionSendResult;
 import org.apache.rocketmq.common.message.Message;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
@@ -39,14 +40,14 @@ public class DistributedTransactionSender {
         // 以调用方的服务名作为标签
         message.setTags(service);
         message.setBody(JSON.toJSONString(body).getBytes());
-        SendResult sendResult = transactionMQProducer.send(message);
+        TransactionSendResult sendResult = transactionMQProducer.sendMessageInTransaction(message, null);
         if(sendResult.getSendStatus() == SendStatus.SEND_OK) {
             // 保存一份未提交的事务消息数据到数据库
             MessageConfirmation messageConfirmation = new MessageConfirmation();
             messageConfirmation.setStatus(0);
             messageConfirmation.setUpdateTime(Instant.now());
             messageConfirmation.setMsgId(sendResult.getMsgId());
-            messageConfirmationRepository.save(messageConfirmation);
+            executor.execute(() -> messageConfirmationRepository.save(messageConfirmation));
             context.set(messageConfirmation);
         } else {
             // 抛出异常, 让本地事务回滚

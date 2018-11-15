@@ -6,6 +6,8 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 
 /**
  * Spring Data  repository for the Menu entity.
@@ -17,4 +19,6 @@ public interface MessageConfirmationRepository extends JpaRepository<MessageConf
     @Modifying
     @Query("update MessageConfirmation mc set mc.status = 1, mc.updateTime = current_time where mc.msgId = ?1")
     void updateStatus(String msgId);
+
+    Optional<MessageConfirmation> findByMsgId(String msgId);
 }

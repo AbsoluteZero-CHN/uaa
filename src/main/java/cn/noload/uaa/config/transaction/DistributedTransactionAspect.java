@@ -3,7 +3,6 @@ package cn.noload.uaa.config.transaction;
 
 import cn.noload.uaa.domain.MessageConfirmation;
 import cn.noload.uaa.repository.MessageConfirmationRepository;
-import org.apache.rocketmq.client.producer.TransactionMQProducer;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.*;
 import org.slf4j.Logger;
@@ -11,10 +10,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
-import java.time.Instant;
+import java.util.Optional;
 import java.util.Set;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.Executor;
 
 
 @Aspect
@@ -51,7 +48,14 @@ public class DistributedTransactionAspect {
     public void doAfterReturning(JoinPoint joinPoint, DistributedTransaction distributedTransaction) {
         // 当执行到此处, 说明本地事务执行没有任何问题, 修改数据回查表数据状态为 `已提交`
         String msgId = context.get().getMsgId();
-        messageConfirmationRepository.updateStatus(msgId);
+        // 由于之前是异步执行, 所以此处 CAS 执行避免存在数据未提交的情况
+        while (true) {
+            Optional<MessageConfirmation> messageConfirmation = messageConfirmationRepository.findByMsgId(msgId);
+            if(messageConfirmation.isPresent()) {
+                messageConfirmationRepository.updateStatus(msgId);
+               break;
+            }
+        }
         // 为了提高消息回查吞吐率, 保存一份副本在 bean 容器中
         submittedTransactionIdSet.add(msgId);
     }

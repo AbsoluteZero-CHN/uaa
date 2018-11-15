@@ -38,7 +38,7 @@ public class DistributedTransactionListener implements TransactionListener {
 
     @Override
     public LocalTransactionState checkLocalTransaction(MessageExt messageExt) {
-        String transactionId = messageExt.getMsgId();
+        String transactionId = messageExt.getTransactionId();
         // 为了提高吞吐效率, 优先从内存中获取已提交的事务
         if(submittedTransactionIdSet.contains(transactionId)) {
             // 此处不会存在并发问题
@@ -46,7 +46,7 @@ public class DistributedTransactionListener implements TransactionListener {
             return LocalTransactionState.COMMIT_MESSAGE;
         }
         // 如果内存中没有数据(比如重启服务, 才向数据库中获取
-        Optional<MessageConfirmation> messageConfirmation = messageConfirmationRepository.findById(transactionId);
+        Optional<MessageConfirmation> messageConfirmation = messageConfirmationRepository.findByMsgId(transactionId);
         if(messageConfirmation.isPresent() && messageConfirmation.get().getStatus() == 1) {
             return LocalTransactionState.COMMIT_MESSAGE;
         }
