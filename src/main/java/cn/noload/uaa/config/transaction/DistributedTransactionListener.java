@@ -8,15 +8,17 @@ import org.apache.rocketmq.common.message.Message;
 import org.apache.rocketmq.common.message.MessageExt;
 import org.springframework.beans.factory.annotation.Qualifier;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.concurrent.CountDownLatch;
 
 
 public class DistributedTransactionListener implements TransactionListener {
 
     private final Set<String> submittedTransactionIdSet;
     private final MessageConfirmationRepository messageConfirmationRepository;
+    private final Map<String, Integer> mqRecheck = new HashMap<>();
 
     public DistributedTransactionListener(
         @Qualifier("submittedTransactionIdSet")Set<String> submittedTransactionIdSet,
@@ -48,8 +50,27 @@ public class DistributedTransactionListener implements TransactionListener {
         // 如果内存中没有数据(比如重启服务, 才向数据库中获取
         Optional<MessageConfirmation> messageConfirmation = messageConfirmationRepository.findByMsgId(transactionId);
         if(messageConfirmation.isPresent() && messageConfirmation.get().getStatus() == 1) {
-            return LocalTransactionState.COMMIT_MESSAGE;
+            if(isTimeout(transactionId)) {
+                return LocalTransactionState.ROLLBACK_MESSAGE;
+            }
+            return LocalTransactionState.UNKNOW;
         }
         return LocalTransactionState.ROLLBACK_MESSAGE;
+    }
+
+    /**
+     * 消息回查可能存在本地事务尚未提交的情况
+     * 如果次数次数超过阈值, 判定本地事务执行失败
+     * */
+    private boolean isTimeout(String transactionId) {
+        if(!mqRecheck.containsKey(transactionId)) {
+            mqRecheck.put(transactionId, 0);
+        }
+        if(mqRecheck.get(transactionId) >= 3) {
+            mqRecheck.remove(transactionId);
+            return true;
+        }
+        mqRecheck.put(transactionId, mqRecheck.get(transactionId) + 1);
+        return false;
     }
 }

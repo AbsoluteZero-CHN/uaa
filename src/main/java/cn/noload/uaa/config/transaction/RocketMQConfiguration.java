@@ -12,8 +12,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
-import java.util.concurrent.CountDownLatch;
 
 @Configuration
 public class RocketMQConfiguration {
@@ -40,7 +40,7 @@ public class RocketMQConfiguration {
 
     @Bean
     @Qualifier("transactionKey")
-    public ThreadLocal<MessageConfirmation> transactionKey() {
+    public ThreadLocal<List<MessageConfirmation>> transactionKey() {
         return new ThreadLocal();
     }
 
