@@ -41,9 +41,10 @@ public class AmountTestService {
         MessageBody messageBody = new MessageBody();
         Map<String, String> testMsg = new HashMap<>();
         testMsg.put("msg", "测试消息");
-        messageBody.setBody(testMsg);
+        messageBody.url("/tx/accept/test")
+            .body(testMsg)
+            .httpMethod(MessageBody.HttpMethod.POST);
         distributedTransactionSender.send("nas", messageBody);
-        Thread.sleep(5000);
         return amountTestRepository.save(amountTest);
     }
 }
