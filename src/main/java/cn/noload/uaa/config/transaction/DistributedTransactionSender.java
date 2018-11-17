@@ -50,6 +50,7 @@ public class DistributedTransactionSender {
 //            executor.execute(() -> messageConfirmationSevice.save(messageConfirmation));
             messageConfirmationSevice.save(messageConfirmation);
             context.get().add(messageConfirmation);
+            System.out.println(context.get());
         } else {
             // 抛出异常, 让本地事务回滚
             throw new Exception("发送 prepare 事务消息失败");
