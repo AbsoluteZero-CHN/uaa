@@ -47,7 +47,8 @@ public class DistributedTransactionSender {
             messageConfirmation.setStatus(0);
             messageConfirmation.setUpdateTime(Instant.now());
             messageConfirmation.setMsgId(sendResult.getMsgId());
-            executor.execute(() -> messageConfirmationSevice.save(messageConfirmation));
+//            executor.execute(() -> messageConfirmationSevice.save(messageConfirmation));
+            messageConfirmationSevice.save(messageConfirmation);
             context.get().add(messageConfirmation);
         } else {
             // 抛出异常, 让本地事务回滚
