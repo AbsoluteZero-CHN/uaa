@@ -72,6 +72,6 @@ public class DistributedTransactionAspect {
     @AfterThrowing(value = "pointCut()&&@annotation(distributedTransaction)", throwing = "exception")
     public void doAfterThrowing(JoinPoint joinPoint, DistributedTransaction distributedTransaction, Exception exception) {
         // 当执行到此处, 说明本地事务执行异常
-        logger.debug("本地事务执行异常: {}", context.get());
+        logger.error("本地事务执行异常: {}", context.get());
     }
 }
