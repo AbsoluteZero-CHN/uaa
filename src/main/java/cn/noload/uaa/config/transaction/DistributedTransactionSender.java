@@ -40,19 +40,15 @@ public class DistributedTransactionSender {
         // 以调用方的服务名作为标签
         message.setTags(service);
         message.setBody(JSON.toJSONString(body).getBytes());
-        System.out.println("发送消息: " + new String(message.getBody()));
         TransactionSendResult sendResult = transactionMQProducer.sendMessageInTransaction(message, null);
-        System.out.println("发送消息结果: " + sendResult.getSendStatus());
         if(sendResult.getSendStatus() == SendStatus.SEND_OK) {
             // 保存一份未提交的事务消息数据到数据库
             MessageConfirmation messageConfirmation = new MessageConfirmation();
             messageConfirmation.setStatus(0);
             messageConfirmation.setUpdateTime(Instant.now());
             messageConfirmation.setMsgId(sendResult.getMsgId());
-//            executor.execute(() -> messageConfirmationSevice.save(messageConfirmation));
-            messageConfirmationSevice.save(messageConfirmation);
+            executor.execute(() -> messageConfirmationSevice.save(messageConfirmation));
             context.get().add(messageConfirmation);
-            System.out.println("当前执行的线程名: " + Thread.currentThread().getName() + ", context size: " + context.get().size());
         } else {
             // 抛出异常, 让本地事务回滚
             throw new Exception("发送 prepare 事务消息失败");
