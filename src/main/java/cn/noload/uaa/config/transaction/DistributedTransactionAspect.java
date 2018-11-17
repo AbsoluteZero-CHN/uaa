@@ -47,6 +47,7 @@ public class DistributedTransactionAspect {
     public void doAfter(JoinPoint joinPoint, DistributedTransaction distributedTransaction) throws Exception {
         if(context.get().size() == 0) {
             // 在本地事务提交前, 校验一次是否发送了消息, 如果未获取到事务消息 id, 则抛出异常回滚
+            System.out.println("当前执行的线程名: " + Thread.currentThread().getName() + ", context size: " + context.get().size());
             throw new Exception("未执行事务RPC, 或事务消息发送失败");
         }
     }
