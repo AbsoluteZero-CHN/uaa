@@ -2,7 +2,7 @@ package cn.noload.uaa.config.transaction;
 
 
 import cn.noload.uaa.domain.MessageConfirmation;
-import cn.noload.uaa.repository.MessageConfirmationRepository;
+import cn.noload.uaa.service.MessageConfirmationSevice;
 import com.alibaba.fastjson.JSON;
 import org.apache.rocketmq.client.producer.SendStatus;
 import org.apache.rocketmq.client.producer.TransactionMQProducer;
@@ -20,17 +20,17 @@ public class DistributedTransactionSender {
 
     private final TransactionMQProducer transactionMQProducer;
     private final Executor executor;
-    private final MessageConfirmationRepository messageConfirmationRepository;
+    private final MessageConfirmationSevice messageConfirmationSevice;
     private final ThreadLocal<List<MessageConfirmation>> context;
 
     public DistributedTransactionSender(
         @Qualifier("transaction") TransactionMQProducer transactionMQProducer,
         @Qualifier("taskExecutor") Executor executor,
-        @Qualifier("transactionKey") ThreadLocal<List<MessageConfirmation>> context,
-        MessageConfirmationRepository messageConfirmationRepository) {
+        MessageConfirmationSevice messageConfirmationSevice,
+        @Qualifier("transactionKey") ThreadLocal<List<MessageConfirmation>> context) {
         this.transactionMQProducer = transactionMQProducer;
         this.executor = executor;
-        this.messageConfirmationRepository = messageConfirmationRepository;
+        this.messageConfirmationSevice = messageConfirmationSevice;
         this.context = context;
     }
 
@@ -47,7 +47,7 @@ public class DistributedTransactionSender {
             messageConfirmation.setStatus(0);
             messageConfirmation.setUpdateTime(Instant.now());
             messageConfirmation.setMsgId(sendResult.getMsgId());
-            executor.execute(() -> messageConfirmationRepository.save(messageConfirmation));
+            executor.execute(() -> messageConfirmationSevice.save(messageConfirmation));
             context.get().add(messageConfirmation);
         } else {
             // 抛出异常, 让本地事务回滚

@@ -2,7 +2,7 @@ package cn.noload.uaa.config.transaction;
 
 
 import cn.noload.uaa.domain.MessageConfirmation;
-import cn.noload.uaa.repository.MessageConfirmationRepository;
+import cn.noload.uaa.service.MessageConfirmationSevice;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.*;
 import org.slf4j.Logger;
@@ -24,15 +24,15 @@ public class DistributedTransactionAspect {
 
     private final ThreadLocal<List<MessageConfirmation>> context;
     private final Set<String> submittedTransactionIdSet;
-    private final MessageConfirmationRepository messageConfirmationRepository;
+    private final MessageConfirmationSevice messageConfirmationSevice;
 
     public DistributedTransactionAspect(
         @Qualifier("transactionKey") ThreadLocal<List<MessageConfirmation>> context,
         @Qualifier("submittedTransactionIdSet") Set<String> submittedTransactionIdSet,
-        MessageConfirmationRepository messageConfirmationRepository) {
+        MessageConfirmationSevice messageConfirmationSevice) {
         this.context = context;
-        this.messageConfirmationRepository = messageConfirmationRepository;
         this.submittedTransactionIdSet = submittedTransactionIdSet;
+        this.messageConfirmationSevice = messageConfirmationSevice;
     }
 
     @Pointcut("@annotation(cn.noload.uaa.config.transaction.DistributedTransaction)")
@@ -57,9 +57,9 @@ public class DistributedTransactionAspect {
         context.get().stream().map(MessageConfirmation::getMsgId).forEach(msgId -> {
             // 由于之前是异步执行, 所以此处 CAS 执行避免存在数据未提交的情况
             while (true) {
-                Optional<MessageConfirmation> messageConfirmation = messageConfirmationRepository.findByMsgId(msgId);
+                Optional<MessageConfirmation> messageConfirmation = messageConfirmationSevice.findByMsgId(msgId);
                 if(messageConfirmation.isPresent()) {
-                    messageConfirmationRepository.updateStatus(msgId);
+                    messageConfirmationSevice.updateStatus(msgId);
                    break;
                 }
             }

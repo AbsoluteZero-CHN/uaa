@@ -1,7 +1,7 @@
 package cn.noload.uaa.config.transaction;
 
 import cn.noload.uaa.domain.MessageConfirmation;
-import cn.noload.uaa.repository.MessageConfirmationRepository;
+import cn.noload.uaa.service.MessageConfirmationSevice;
 import org.apache.rocketmq.client.producer.LocalTransactionState;
 import org.apache.rocketmq.client.producer.TransactionListener;
 import org.apache.rocketmq.common.message.Message;
@@ -17,14 +17,14 @@ import java.util.Set;
 public class DistributedTransactionListener implements TransactionListener {
 
     private final Set<String> submittedTransactionIdSet;
-    private final MessageConfirmationRepository messageConfirmationRepository;
+    private final MessageConfirmationSevice messageConfirmationSevice;
     private final Map<String, Integer> mqRecheck = new HashMap<>();
 
     public DistributedTransactionListener(
-        @Qualifier("submittedTransactionIdSet")Set<String> submittedTransactionIdSet,
-        MessageConfirmationRepository messageConfirmationRepository) {
+        @Qualifier("submittedTransactionIdSet") Set<String> submittedTransactionIdSet,
+        MessageConfirmationSevice messageConfirmationSevice) {
         this.submittedTransactionIdSet = submittedTransactionIdSet;
-        this.messageConfirmationRepository = messageConfirmationRepository;
+        this.messageConfirmationSevice = messageConfirmationSevice;
     }
 
     @Override
@@ -48,7 +48,7 @@ public class DistributedTransactionListener implements TransactionListener {
             return LocalTransactionState.COMMIT_MESSAGE;
         }
         // 如果内存中没有数据(比如重启服务, 才向数据库中获取
-        Optional<MessageConfirmation> messageConfirmation = messageConfirmationRepository.findByMsgId(transactionId);
+        Optional<MessageConfirmation> messageConfirmation = messageConfirmationSevice.findByMsgId(transactionId);
         if(messageConfirmation.isPresent() && messageConfirmation.get().getStatus() == 1) {
             if(isTimeout(transactionId)) {
                 return LocalTransactionState.ROLLBACK_MESSAGE;
