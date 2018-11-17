@@ -49,7 +49,8 @@ public class DistributedTransactionSender {
             messageConfirmation.setStatus(0);
             messageConfirmation.setUpdateTime(Instant.now());
             messageConfirmation.setMsgId(sendResult.getMsgId());
-            executor.execute(() -> messageConfirmationSevice.save(messageConfirmation));
+//            executor.execute(() -> messageConfirmationSevice.save(messageConfirmation));
+            messageConfirmationSevice.save(messageConfirmation);
             context.get().add(messageConfirmation);
             System.out.println("当前执行的线程名: " + Thread.currentThread().getName() + ", context size: " + context.get().size());
         } else {
